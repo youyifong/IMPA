@@ -47,12 +47,12 @@ modality_list:
   - Compound
 
 # DIRECTORIES FOR DATA
-image_path: project_folder/datasets/bbbc021_six
-data_index_path: project_folder/datasets/bbbc021_six/metadata/bbbc021_df_six.csv
+image_path: tutorial/datasets/bbbc021_six
+data_index_path: tutorial/datasets/bbbc021_six/metadata/bbbc021_df_six.csv
 embedding_path: embeddings/csv/emb_fp.csv
 
 # DIRECTORIES FOR RESULTS 
-experiment_directory: project_folder/experiments/
+experiment_directory: tutorial/experiments/
 sample_dir: sample   # Name of directory for sampled images 
 checkpoint_dir: checkpoint  # Name of directory for checkpoints
 naming_key: dataset_name

@@ -108,6 +108,7 @@ class CellDataset:
         """
         # Read the index CSV file
         dataset = pd.read_csv(self.data_index_path, index_col=0)
+        print(f"data_index_path shape: {dataset.shape}")
         
         # Initialize CPD_NAME differently based on the dataset 
         self.cpd_name = "BROAD_SAMPLE" if self.dataset_name == "cpg0000" else "CPD_NAME"
@@ -131,13 +132,14 @@ class CellDataset:
             for key in subset.columns:
                 dataset_splits[fold_name][key] = np.array(subset[key])
             if not self.batch_correction:
+
                 # Add control and treated flags
                 if not self.add_controls:
-                    dataset_splits[fold_name]["trt_idx"] = (dataset_splits[fold_name]["STATE"] == "trt")
+                    dataset_splits[fold_name]["trt_idx"] = (dataset_splits[fold_name]["STATE"] == 1)
                 else:
-                    dataset_splits[fold_name]["trt_idx"] = (np.isin(dataset_splits[fold_name]["STATE"], ["trt", "control"]))
-                dataset_splits[fold_name]["ctrl_idx"] = (dataset_splits[fold_name]["STATE"] == "control")
-                
+                    dataset_splits[fold_name]["trt_idx"] = (np.isin(dataset_splits[fold_name]["STATE"], [1, 0]))
+                dataset_splits[fold_name]["ctrl_idx"] = (dataset_splits[fold_name]["STATE"] == 0)
+
         return dataset_splits
 
     def _initialize_mol_names(self):
@@ -251,7 +253,7 @@ class CellDatasetFold(Dataset):
         self.batch_correction = batch_correction
         self.multimodal = multimodal
         self.cpd_name = cpd_name
-        
+
         # Extract variables
         if self.batch_correction:
             self.file_names = data['SAMPLE_KEY']
@@ -283,6 +285,8 @@ class CellDatasetFold(Dataset):
                     self.y[cond] = self.data['ANNOT'][self.data[f"{cond}_idx"]]
                     if dataset_name == "bbbc021":
                         self.dose[cond] = self.data['DOSE'][self.data[f"{cond}_idx"]]
+
+            # print(f"Number of control samples: {len(self.file_names['ctrl'])}, Number of treated samples: {len(self.file_names['trt'])}")
                         
         del data 
         
