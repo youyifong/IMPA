@@ -110,6 +110,10 @@ dataloader.mol2id
 controls = []
 transformed = {}
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+solver.nets.mapping_network = solver.nets.mapping_network.to(device)
+solver.nets.generator = solver.nets.generator.to(device)
+
 with torch.no_grad():
     for i, (drug, drug_id) in enumerate(dataloader.mol2id.items()):
         print(f"Transforming images for {drug}")
@@ -123,8 +127,9 @@ with torch.no_grad():
             id_pert = dataloader.mol2id[drug] * torch.ones(X_ctr.shape[0]).long().cuda()
             y = solver.embedding_matrix(id_pert)
             y = torch.cat([y, z], dim=1)
+
             y = solver.nets.mapping_network(y)
-    
+
             _, X_generated = solver.nets.generator(X_ctr, y)
 
             if i==0:
